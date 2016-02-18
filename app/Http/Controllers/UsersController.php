@@ -152,6 +152,10 @@ class UsersController extends Controller
           $user->user_id = $u->user_id;
           $user->user_password = password_hash(md5("password"), PASSWORD_BCRYPT);
 
+          if ($user = \App\Models\User::find($u->user_id)) {
+            echo 'User already exists.';
+          }
+          else
           try {
             $user->save();
             echo 'User Saved';
@@ -159,6 +163,8 @@ class UsersController extends Controller
           } catch (\Illuminate\Database\QueryException $e) {
             echo 'Unable to save user';
           }
+
+          if
 
           echo '<h3>Username: ' .$user->username . '</h3><h3>ID: ' . $u->user_id . '</h3>';
           echo '<pre>'; var_dump($u); echo '</pre>';
