@@ -40,7 +40,8 @@ if (Config::get('app.debug')) {
     }]);
 }
 
-Route::get('/usertest', 'UsersController@generateUsers');
+Route::get('/usertest', 'TestController@generateUsers');
+Route::get('/usertest2', 'TestController2@loadFileTest');
 
 
 Route::get('/home/news', ['as' => 'news', 'uses' => 'HomeController@getNews']);

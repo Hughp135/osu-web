@@ -51,6 +51,10 @@ abstract class Model extends BaseModel
 
     protected $_enabledMods = null;
 
+    public function getEnabledModsVal(){
+      return $this->enabled_mods;
+    }
+
     public function scopeForUser($query, User $user)
     {
         return $query->where('user_id', $user->user_id);
