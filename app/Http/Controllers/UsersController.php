@@ -143,52 +143,239 @@ class UsersController extends Controller
       $api = '&k='.$api_key;
 
       // Get the user cookiezi.
-        $u = json_decode(file_get_contents($base_url. 'get_user?u=cookiezi' . $api ))[0];
+        $u = json_decode(file_get_contents($base_url. 'get_user?u=azer&event_days=3' . $api ))[0];
         if (!empty($u))
         {
-          $user = new \App\Models\User;
-          $user->username = $u->username;
-          $user->username_clean = $u->username;
-          $user->user_id = $u->user_id;
-          $user->user_password = password_hash(md5("password"), PASSWORD_BCRYPT);
 
+          echo '<h3>Username: ' .$u->username . '</h3><h3>ID: ' . $u->user_id .'</h3><h3>PP Rank: ' . strval($u->pp_rank) . '</h3>';
+
+
+        // Create the user if not exists
           if ($user = \App\Models\User::find($u->user_id)) {
-            echo 'User already exists.';
+            echo 'User already exists.<br>';
           }
-          else
-          try {
-            $user->save();
+          else try {
+            $user = \App\Models\User::create([
+              'username' => $u->username,
+              'username_clean' => $u->username,
+              'user_id' => $u->user_id,
+              'user_password'=> password_hash(md5("password"), PASSWORD_BCRYPT)
+            ]);
+
             echo 'User Saved';
             echo 'Stats: ' . $user->statistics('osu');
           } catch (\Illuminate\Database\QueryException $e) {
-            echo 'Unable to save user';
+            echo 'Unable to save user<br>';
           }
 
-          if
+        // Create the osu user stats  if not exists
+          if ($stat = \App\Models\UserStatistics\Osu::find($u->user_id)) {
+            echo 'Stats already exists.<br>';
+          }
+          else try {
+            $stat = \App\Models\UserStatistics\Osu::create([
+              'user_id'         => $u->user_id,
+              'count300'        => $u->count300,
+              'count100'        => $u->count100,
+              'count50'         => $u->count50,
+              'accuracy'        => $u->accuracy,
+              'accuracy_new'    => $u->accuracy,
+              'playcount'       => $u->playcount,
+              'ranked_score'    => $u->ranked_score,
+              'total_score'     => $u->total_score,
+              'x_rank_count'    => $u->count_rank_ss,
+              's_rank_count'    => $u->count_rank_s,
+              'a_rank_count'    => $u->count_rank_a,
+              'rank'            => $u->pp_rank,
+              'country_acronym' => $u->country
+            ]);
+            echo 'Stats Saved<br>';
+          } catch (\Illuminate\Database\QueryException $e) {
+            echo ' Unable to save stats<br>';
+          }
 
-          echo '<h3>Username: ' .$user->username . '</h3><h3>ID: ' . $u->user_id . '</h3>';
-          echo '<pre>'; var_dump($u); echo '</pre>';
+        // generate user rank history
+        if ($hist = \App\Models\RankHistory::where('user_id',$u->user_id)->first()) {
+          echo 'Stats already exists.<br>';
+        }
+        else try {
+          echo '<h3>pp rank plus 1:'; echo (intval($u->pp_rank) + 1); echo '</h3>';
+          $hist = new \App\Models\RankHistory;
+          $hist->user_id = $u->user_id;
+          $hist->mode = 0;
+          for ($i=0; $i<90; $i++){
+            $r = 'r'.$i;
+            $hist->$r = intval($u->pp_rank) + (89 - $i); // 1 rank per day increase up to current rank lol
+          }
+          $hist->save();
+          echo 'Rank Histroy Saved<br>';
+        } catch (\Illuminate\Database\QueryException $e) {
+          echo ' Unable to rank history<br>';
+        }
 
+          foreach ($u->events as $event) {
+            // Save events
+            $ev = \App\Models\Event::where('user_id',$u->user_id)->where('date',$event->date);
+            if ( $ev->count() >0 ) {
+              echo 'Event already exists.<br>';
+            }
+            else try {
+              $event = new \App\Models\Event;
+              $event->user_id       = $u->user_id;
+              $event->text          = $event->display_html;
+              $event->beatmap_id    = $event->beatmap_id;
+              $event->beatmapset_id = $event->beatmapset_id;
+              $event->epicfactor    = $event->epicfactor;
+              $event->date          = $event->date;
+
+              $event->save();
+              echo 'Event saved';
+            } catch (\Illuminate\Database\QueryException $e) {
+              echo ' Unable to save event';
+            }
+          }
+
+
+
+
+
+      // score stuff
           // Get the top 50 scores for the user
           $user_best = json_decode(file_get_contents($base_url. 'get_user_best?u='. $u->user_id . '&limit=2'. $api ));
           if (!empty($user_best)) {
-            echo '<h3>Beatmap ID: ' . $user_best[0]->beatmap_id . '</h3>';
+            foreach ($user_best as $score) {
 
-            // Get the first beatmap from the user's top scores
-            $beatmap = json_decode(file_get_contents($base_url. 'get_beatmaps?b='. $user_best[0]->beatmap_id . $api ))[0];
+            // beatmap stuff
+                // Get the first beatmap from the user's top scores
+                $beatmap = json_decode(file_get_contents($base_url. 'get_beatmaps?b='. $score->beatmap_id . $api ))[0];
+                $bmset_id = $beatmap->beatmapset_id; // save bmset id
 
-            // Get the beatmapset from the beatmap
-            echo '<h3>Beatmapset ID: ' . $beatmap->beatmapset_id . '</h3>';
+                // Get the beatmapset from the beatmap
+                echo '<h3>Beatmapset ID: ' . $beatmap->beatmapset_id . '</h3>';
 
-            $beatmapset = json_decode(file_get_contents($base_url. 'get_beatmaps?s='. $beatmap->beatmapset_id . $api ));
+                $beatmapset = json_decode(file_get_contents($base_url. 'get_beatmaps?s='. $beatmap->beatmapset_id . $api ));
 
-            echo '<h3>Beatmap IDs in the set: ';
+                echo '<h3>Beatmap IDs in the set</h3>';
 
-            // Cycle through each beatmap in the set
-            foreach ($beatmapset as $beatmap) {
-              echo $beatmap->beatmap_id.', ';
-            }
-            echo '</h3>';
+
+
+                $beatmap_diff_names = '';
+                $set_play_count = 0;
+
+                foreach ($beatmapset as $bm) {
+                echo '<pre>'; var_dump($bm); echo '</pre>';
+                  echo $bm->beatmap_id.' name '.$bm->version.'<br>';
+                  $beatmap_diff_names =  $beatmap_diff_names . $bm->version.',';
+                  $set_play_count += $bm->playcount;
+
+              //Save each Beatmap in the set
+                  if ( \App\Models\Beatmap::where('beatmap_id',$bm->beatmap_id)->count() > 0 ) {
+                    echo 'Beatmap already exists.<br>';
+                  } else try {
+                    $new_bm = new \App\Models\Beatmap;
+                      $new_bm->beatmap_id = $bm->beatmap_id;
+                      $new_bm->beatmapset_id = $bm->beatmapset_id;
+                      $new_bm->filename = $bm->beatmapset_id. ' '. $bm->artist . ' - '. $bm->title .'.osz';
+                      $new_bm->checksum = $bm->file_md5;
+                      $new_bm->version = $bm->version;
+                      $new_bm->total_length = $bm->total_length;
+                      $new_bm->hit_length = $bm->hit_length;
+                      $new_bm->countTotal = $bm->max_combo;
+                      $new_bm->countNormal = round(intval($bm->max_combo) - (0.2 * intval($bm->max_combo))); // sample
+                      $new_bm->countSlider = round(intval($bm->max_combo) - (0.8 * intval($bm->max_combo))) - 1; // sample
+                      $new_bm->countSpinner = 1; // sample
+                      $new_bm->diff_drain = $bm->diff_drain;
+                      $new_bm->diff_size = $bm->diff_size;
+                      $new_bm->diff_overall = $bm->diff_overall;
+                      $new_bm->diff_approach = $bm->diff_approach;
+                      $new_bm->playmode = $bm->mode;
+                      $new_bm->approved = $bm->approved;
+                      $new_bm->difficultyrating = $bm->difficultyrating;
+                      $new_bm->playcount = $bm->playcount;
+                      $new_bm->passcount = $bm->passcount;
+
+                      $new_bm->save();
+                    echo 'Saved Beatmap<br>';
+
+                  } catch (\Illuminate\Database\QueryException $e) {
+                    echo ' Unable to save Beatmap';
+                    echo $e->getMessage();
+                  }
+                } // end for each bm in beatmapset
+
+                rtrim($beatmap_diff_names, ","); // take last comma off string
+
+            // Save Beatmapset
+
+                $bms = \App\Models\BeatmapSet::where('beatmapset_id',$bmset_id);
+                if ( $bms->count() >0 ) {
+                  echo 'Beatmapset already exists.<br>';
+                }
+                else try {
+                  $set = new \App\Models\BeatmapSet;
+                  $set->beatmapset_id = $bmset_id;
+                  $set->creator = $beatmap->creator;
+                  $set->artist = $beatmap->artist;
+                  $set->title = $beatmap->title;
+                  $set->displaytitle = $beatmap->title;
+                  $set->source = $beatmap->source;
+                  $set->tags = $beatmap->tags;
+                  $set->bpm = $beatmap->bpm;
+                  $set->approved = $beatmap->approved;
+                  $set->approved_date = $beatmap->approved_date;
+                  $set->genre_id = $beatmap->genre_id;
+                  $set->language_id = $beatmap->language_id;
+                  $set->versions_available = count($beatmapset);
+                  $set->difficulty_names = $beatmap_diff_names;
+                  $set->play_count = $set_play_count;
+                  $set->favourite_count = $beatmap->favourite_count;
+
+                  $set->save();
+                  echo 'Beatmapset Saved<br>';
+
+                } catch (\Illuminate\Database\QueryException $e) {
+                  echo ' Unable to save BeatmapSet';
+                }
+
+
+                echo '</h3>';
+
+          // Save score
+          if  ( $existing_score = \App\Models\Score\Best\Osu::where('beatmapset_id', $bmset_id)->first() )
+          $existing_score->forceDelete(); // overwrite existing score
+
+          if  ( $existing_score2 = \App\Models\Score\Osu::where('beatmapset_id', $bmset_id)->first() )
+          $existing_score2->forceDelete(); // overwrite existing score
+
+              try {
+              $sc = new \App\Models\Score\Osu;
+              $sc2 = new \App\Models\Score\Best\Osu;
+                $sc->user_id = $u->user_id;
+                $sc->beatmap_id = $score->beatmap_id;
+                $sc->beatmapset_id = $bmset_id;
+                $sc->score = $score->score;
+                $sc->maxcombo = $score->maxcombo;
+                $sc->rank = $score->rank;
+                $sc->count300 = $score->count300;
+                $sc->count100 = $score->count100;
+                $sc->count50 = $score->count50;
+                $sc->countgeki = $score->countgeki;
+                $sc->countmiss = $score->countmiss;
+                $sc->countkatu = $score->countkatu;
+                $sc->enabled_mods = $score->enabled_mods;
+                $sc->date = $score->date;
+
+              $sc2 = $sc;
+              $sc->save();
+              $sc2->save();
+              echo 'Score saved<br>';}
+              catch (\Illuminate\Database\QueryException $e) {
+                echo ' Unable to save Score';
+              }
+
+            } // end foreach user best as score
+
+
           }
         }
         else return 'User Not Found';
