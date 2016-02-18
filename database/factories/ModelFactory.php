@@ -1,26 +1,29 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Model Factories
-|--------------------------------------------------------------------------
-|
-| Here you may define all of your model factories. Model factories give
-| you a convenient way to create models for testing and seeding your
-| database. Just tell the factory how a default model should look.
-|
-*/
-
+/**
+ *    Copyright 2015 ppy Pty. Ltd.
+ *
+ *    This file is part of osu!web. osu!web is distributed with the hope of
+ *    attracting more community contributions to the core ecosystem of osu!.
+ *
+ *    osu!web is free software: you can redistribute it and/or modify
+ *    it under the terms of the Affero GNU General Public License version 3
+ *    as published by the Free Software Foundation.
+ *
+ *    osu!web is distributed WITHOUT ANY WARRANTY; without even the implied
+ *    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *    See the GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with osu!web.  If not, see <http://www.gnu.org/licenses/>.
+ */
 $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
-
-    // Get users from the Osu API (gets API key from .env)
-
-
-      return [
-          "username" => "user",
-          "username_clean" => "user",
-          "user_password" => password_hash(md5("password"), PASSWORD_BCRYPT)
-      ];
-
-
+    return [
+      'username' => $faker->userName,
+      'username_clean' => $faker->userName,
+      'user_password' => password_hash(md5($faker->password), PASSWORD_BCRYPT),
+      'user_lastvisit' => 0,
+  ];
 });
+
+?>
