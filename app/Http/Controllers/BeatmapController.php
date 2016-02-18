@@ -34,6 +34,9 @@ class BeatmapController extends Controller
 
     public function index()
     {
+        // test
+        // return (BeatmapSet::listing());
+
         $fractal = new Manager();
         $languages = Language::listing();
         $genres = Genre::listing();
@@ -42,6 +45,8 @@ class BeatmapController extends Controller
             new BeatmapSetTransformer,
             'difficulties'
         );
+
+
 
         // temporarily put filters here
         $modes = [['id' => null, 'name' => trans('beatmaps.mode.any')]];

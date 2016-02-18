@@ -24,6 +24,7 @@ use Es;
 use Illuminate\Database\Eloquent\Model;
 use Auth;
 use DB;
+use App\Models\Beatmap;
 
 class BeatmapSet extends Model
 {
@@ -308,6 +309,7 @@ class BeatmapSet extends Model
             $searchParams['body']['query']['bool']['must'] = $matchParams;
         }
 
+
         try {
             $results = Es::search($searchParams);
             $beatmap_ids = array_map(
@@ -317,6 +319,7 @@ class BeatmapSet extends Model
                 $results['hits']['hits']
             );
         } catch (\Exception $e) {
+            dd($e->getMessage());
             $beatmap_ids = [];
         }
 
@@ -340,8 +343,25 @@ class BeatmapSet extends Model
 
         self::sanitizeSearchParams($params);
 
+        extract($params);
+
+        $results_per_page = 50;
+        $offset = ($page - 1) * $results_per_page;
+
+
+        //
+        // $beatmapsets = Beatmapset::where([
+        //     'active'    => 1
+        //     ])->skip($offset)
+        //     ->take($results_per_page)
+        //     ->orderBy('submit_date','desc')
+        //     ->get();
+
+        // dd($beatmapsets);
+
+        // $beatmaps
+
         $beatmap_ids = self::searchES($params);
-        $beatmaps = [];
 
         if (count($beatmap_ids) > 0) {
             $ids = implode(',', $beatmap_ids);
@@ -353,6 +373,7 @@ class BeatmapSet extends Model
 
     public static function listing()
     {
+        // return BeatmapSet::all();
         return self::search();
     }
 

@@ -133,4 +133,58 @@ class UsersController extends Controller
 
         return view('users.show', compact('user', 'userArray', 'achievements'));
     }
+
+    public function generateUsers(){
+      $base_url = 'https://osu.ppy.sh/api/';
+      $api_key = env('OSU_API', null);
+
+      if (empty($api_key)) return 'no api key set';
+
+      $api = '&k='.$api_key;
+
+      // Get the user cookiezi.
+        $u = json_decode(file_get_contents($base_url. 'get_user?u=cookiezi' . $api ))[0];
+        if (!empty($u))
+        {
+          $user = new \App\Models\User;
+          $user->username = $u->username;
+          $user->username_clean = $u->username;
+          $user->user_id = $u->user_id;
+          $user->user_password = password_hash(md5("password"), PASSWORD_BCRYPT);
+
+          try {
+            $user->save();
+            echo 'User Saved';
+            echo 'Stats: ' . $user->statistics('osu');
+          } catch (\Illuminate\Database\QueryException $e) {
+            echo 'Unable to save user';
+          }
+
+          echo '<h3>Username: ' .$user->username . '</h3><h3>ID: ' . $u->user_id . '</h3>';
+          echo '<pre>'; var_dump($u); echo '</pre>';
+
+          // Get the top 50 scores for the user
+          $user_best = json_decode(file_get_contents($base_url. 'get_user_best?u='. $u->user_id . '&limit=2'. $api ));
+          if (!empty($user_best)) {
+            echo '<h3>Beatmap ID: ' . $user_best[0]->beatmap_id . '</h3>';
+
+            // Get the first beatmap from the user's top scores
+            $beatmap = json_decode(file_get_contents($base_url. 'get_beatmaps?b='. $user_best[0]->beatmap_id . $api ))[0];
+
+            // Get the beatmapset from the beatmap
+            echo '<h3>Beatmapset ID: ' . $beatmap->beatmapset_id . '</h3>';
+
+            $beatmapset = json_decode(file_get_contents($base_url. 'get_beatmaps?s='. $beatmap->beatmapset_id . $api ));
+
+            echo '<h3>Beatmap IDs in the set: ';
+
+            // Cycle through each beatmap in the set
+            foreach ($beatmapset as $beatmap) {
+              echo $beatmap->beatmap_id.', ';
+            }
+            echo '</h3>';
+          }
+        }
+        else return 'User Not Found';
+    }
 }
