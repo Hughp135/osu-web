@@ -39,8 +39,10 @@ apt-get install \
     -q -y --force-yes
 
 # install java & elasticsearch
-    sudo apt-get install openjdk-7-jrejava
-
+    sudo add-apt-repository ppa:webupd8team/java
+    sudo apt-get update
+    sudo apt-get install oracle-java8-installer
+    
     # install elasticsearch
     wget https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.2.0/elasticsearch-2.2.0.deb --no-verbose
     sudo dpkg -i elasticsearch-2.2.0.deb
@@ -51,13 +53,13 @@ apt-get install \
 
     sudo wget http://xbib.org/repository/org/xbib/elasticsearch/importer/elasticsearch-jdbc/2.2.0.0/elasticsearch-jdbc-2.2.0.0-dist.zip --no-verbose --directory-prefix=/
 
-    sudo unzip /elasticsearch-jdbc-2.2.0.0-dist.zip
+    sudo unzip elasticsearch-jdbc-2.2.0.0-dist.zip
 
-    sudo cp /vagrant/conf/jdbcexec.sh /elasticsearch-jdbc-2.2.0.0/bin/jdbcexec.sh
+    sudo cp /vagrant/conf/jdbcexec.sh elasticsearch-jdbc-2.2.0.0/bin/jdbcexec.sh
 
     sudo service elasticsearch start
 
-    bash /elasticsearch-jdbc-2.2.0.0/bin/jdbcexec.sh
+    bash elasticsearch-jdbc-2.2.0.0/bin/jdbcexec.sh
 
 
 update-rc.d php7.0-fpm defaults

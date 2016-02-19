@@ -23,10 +23,13 @@ use App\Models\User;
 use App\Transformers\UserTransformer;
 use Auth;
 use Request;
+use ZipArchive;
 
 class TestController extends Controller{
+
     protected $section = 'test';
   public function generateUsers(){
+
     $count_api_calls = 0;
     $base_url = 'https://osu.ppy.sh/api/';
     $api_key = env('OSU_API', null);
@@ -35,7 +38,7 @@ class TestController extends Controller{
 
     $api = '&k='.$api_key;
 
-    $users = ['cookiezi', 'azer', 'doomsday'];
+    $users = ['cookiezi', 'azer', 'doomsday', 'oxycodone', 'kynan', 'I will be back', 'Hot Korean Girl', 'ifailedatlife'];
 
     foreach ($users as $user)
       {
@@ -147,8 +150,8 @@ class TestController extends Controller{
 
 
     // score stuff
-        // Get the top 50 scores for the user
-        $user_best = json_decode(file_get_contents($base_url. 'get_user_best?u='. $u->user_id . '&limit=2'. $api ));
+        // Get the top 20 scores for the user
+        $user_best = json_decode(file_get_contents($base_url. 'get_user_best?u='. $u->user_id . '&limit=20'. $api ));
         ++$count_api_calls;
         if (!empty($user_best)) {
           foreach ($user_best as $score) {
@@ -190,7 +193,7 @@ class TestController extends Controller{
                     $new_bm->version = $bm->version;
                     $new_bm->total_length = $bm->total_length;
                     $new_bm->hit_length = $bm->hit_length;
-                    $new_bm->countTotal = $bm->max_combo;
+                    $new_bm->countTotal = $bm->max_combo !== null ? $bm->max_combo : 1500 ;
                     $new_bm->countNormal = round(intval($bm->max_combo) - (0.2 * intval($bm->max_combo))); // sample
                     $new_bm->countSlider = round(intval($bm->max_combo) - (0.8 * intval($bm->max_combo))) - 1; // sample
                     $new_bm->countSpinner = 1; // sample
@@ -262,6 +265,7 @@ class TestController extends Controller{
 
             try {
             $sc = new \App\Models\Score\Osu;
+            $sc2 = new \App\Models\Score\Osu;
 
               $sc->user_id = $u->user_id;
               $sc->beatmap_id = $score->beatmap_id;
@@ -276,18 +280,39 @@ class TestController extends Controller{
               $sc->countmiss = $score->countmiss;
               $sc->countkatu = $score->countkatu;
               $sc->enabled_mods = $score->enabled_mods;
-
               $sc->date = $score->date;
 
+              $sc2->user_id = $u->user_id;
+              $sc2->beatmap_id = $score->beatmap_id;
+              $sc2->beatmapset_id = $bmset_id;
+              $sc2->score = $score->score;
+              $sc2->maxcombo = $score->maxcombo;
+              $sc2->rank = $score->rank;
+              $sc2->count300 = $score->count300;
+              $sc2->count100 = $score->count100;
+              $sc2->count50 = $score->count50;
+              $sc2->countgeki = $score->countgeki;
+              $sc2->countmiss = $score->countmiss;
+              $sc2->countkatu = $score->countkatu;
+              $sc2->enabled_mods = $score->enabled_mods;
+              $sc2->pp = $score->pp;
+              $sc2->date = $score->date;
+
+
+
+
             $sc->save();
+            $sc2->save();
 
             echo 'Score saved<br>';
 
           } catch (\Illuminate\Database\QueryException $e) {
               echo ' Unable to save Score';
             }
-            $sc->enabled_mods_val = 16;
+            $sc->enabled_mods_val = 0;
+            $sc2->enabled_mods_val = 0;
             $scores_array[] = $sc;
+            $scores_best_array[] = $sc2;
           } // end foreach user best as score
 
         }
@@ -297,13 +322,40 @@ class TestController extends Controller{
     } // end foreach user
 
     echo '<h3>API Calls Made: '.$count_api_calls.'</h3>';
-        \Storage::put('users.json', json_encode($users_array));
-        \Storage::put('stats.json', json_encode($stats_array));
-        \Storage::put('hist.json', json_encode($hist_array));
-        \Storage::put('events.json', json_encode($events_array));
-        \Storage::put('beatmaps.json', json_encode($beatmap_array));
-        \Storage::put('beatmapsets.json', json_encode($beatmapset_array));
-        \Storage::put('scores.json', json_encode($scores_array));
+
+    // Create a ZIP file to contain the pdfs
+      $zip = new ZipArchive();
+      $datapath = base_path().'/database/data';
+      $zippath = base_path().'/database/data/jsondata.zip';
+
+      // For some reason the ZipArchive function won't create new directories, so create new directory if needed.
+      if (!file_exists($datapath)) {
+        mkdir($datapath, 0777, true);
+      }
+
+      if ($zip->open($zippath, ZipArchive::CREATE)!==TRUE) {
+        dd("Server Error: cannot open <$zippath>\n");
+      }
+
+      // Add both pdf files to the zip and save.
+      $zip->addFromString('users.json', json_encode($users_array));
+      $zip->addFromString('stats.json', json_encode($stats_array));
+      $zip->addFromString('hist.json', json_encode($hist_array));
+      $zip->addFromString('events.json', json_encode($events_array));
+      $zip->addFromString('beatmaps.json', json_encode($beatmap_array));
+      $zip->addFromString('beatmapsets.json', json_encode($beatmapset_array));
+      $zip->addFromString('scores.json', json_encode($scores_array));
+      $zip->addFromString('scores_best.json', json_encode($scores_best_array));
+      $zip->close();
+
+      dd($zip);
+        // \Storage::put('users.json', json_encode($users_array));
+        // \Storage::put('stats.json', json_encode($stats_array));
+        // \Storage::put('hist.json', json_encode($hist_array));
+        // \Storage::put('events.json', json_encode($events_array));
+        // \Storage::put('beatmaps.json', json_encode($beatmap_array));d
+        // \Storage::put('beatmapsets.json', json_encode($beatmapset_array));
+        // \Storage::put('scores.json', json_encode($scores_array));
   }
 
 

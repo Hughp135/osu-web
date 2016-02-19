@@ -19,20 +19,15 @@
  */
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Transformers\UserTransformer;
-use Auth;
-use Request;
-
 class TestController2 extends Controller{
     protected $section = 'test';
 
 
   public function loadFileTest(){
-
+$datapath = base_path().'/database/data/';
   // USERS
   echo '<h3>Users</h3>';
-    $users = json_decode(\Storage::get('users.json'));
+    $users = json_decode(file_get_contents($datapath.'users.json'));
     foreach ($users as $u){
       if ($existing_user = \App\Models\User::find($u->user_id))
       $existing_user->forceDelete();
@@ -49,7 +44,7 @@ class TestController2 extends Controller{
 
     // STATS
     echo '<h3>Stats</h3>';
-      $stats = json_decode(\Storage::get('stats.json'));
+      $stats = json_decode(file_get_contents($datapath.'stats.json'));
       foreach ($stats as $stat){
         if ($ex = \App\Models\UserStatistics\Osu::find($stat->user_id))
         $ex->forceDelete();
@@ -77,7 +72,7 @@ class TestController2 extends Controller{
 
        // RANK HISTORY
        echo '<h3>Rank History</h3>';
-         $hists = json_decode(\Storage::get('hist.json'));
+         $hists = json_decode(file_get_contents($datapath.'hist.json'));
          foreach ($hists as $ht){
            // generate user rank history
            if ($hist = \App\Models\RankHistory::where('user_id',$ht->user_id)) {
@@ -102,7 +97,7 @@ class TestController2 extends Controller{
 
       // EVENTS
           echo '<h3>Events</h3>';
-      $events = json_decode(\Storage::get('events.json'));
+      $events = json_decode(file_get_contents($datapath.'events.json'));
       foreach ($events as $event){
         $ev = \App\Models\Event::where('user_id',$event->user_id)->where('date',$event->date)->first();
         if ( $ev ) {
@@ -130,7 +125,7 @@ class TestController2 extends Controller{
 
        // BEATMAPS
            echo '<h3>Beatmaps</h3>';
-       $beatmaps = json_decode(\Storage::get('beatmaps.json'));
+       $beatmaps = json_decode(file_get_contents($datapath.'beatmaps.json'));
        foreach ($beatmaps as $bm){
          if ( $new_bm = \App\Models\Beatmap::where('beatmap_id',$bm->beatmap_id)->first() ) {
            $new_bm->delete();
@@ -168,7 +163,7 @@ class TestController2 extends Controller{
 
         // BEATMAPSETS
             echo '<h3>Beatmap Sets</h3>';
-        $beatmapsets = json_decode(\Storage::get('beatmapsets.json'));
+        $beatmapsets = json_decode(file_get_contents($datapath.'beatmapsets.json'));
         foreach ($beatmapsets as $beatmapset){
           $set = \App\Models\BeatmapSet::where('beatmapset_id',$beatmapset->beatmapset_id)->first();
           if ( $set ) {
@@ -205,13 +200,14 @@ class TestController2 extends Controller{
 
          // SCORES
              echo '<h3>Scores</h3>';
-         $scores = json_decode(\Storage::get('scores.json'));
+         $scores = json_decode(file_get_contents($datapath.'scores.json'));
          foreach ($scores as $score){
            if  ( $existing_score = \App\Models\Score\Osu::where('user_id',$score->user_id)->where('beatmap_id', $score->beatmap_id)->first() )
            $existing_score->delete(); // overwrite existing score
            echo 'Over-riding: ';
                try {
                $sc = new \App\Models\Score\Osu;
+               $sc2 = new \App\Models\Score\Best\Osu;
 
                  $sc->user_id = $score->user_id;
                  $sc->beatmap_id = $score->beatmap_id;
@@ -227,9 +223,24 @@ class TestController2 extends Controller{
                  $sc->countkatu = $score->countkatu;
                  $sc->enabled_mods = $score->enabled_mods_val;
 
+                 $sc2->user_id = $score->user_id;
+                 $sc2->beatmap_id = $score->beatmap_id;
+                 $sc2->beatmapset_id = $score->beatmapset_id;
+                 $sc2->score = $score->score;
+                 $sc2->maxcombo = $score->maxcombo;
+                 $sc2->rank = $score->rank;
+                 $sc2->count300 = $score->count300;
+                 $sc2->count100 = $score->count100;
+                 $sc2->count50 = $score->count50;
+                 $sc2->countgeki = $score->countgeki;
+                 $sc2->countmiss = $score->countmiss;
+                 $sc2->countkatu = $score->countkatu;
+                 $sc2->enabled_mods = $score->enabled_mods_val;
+
                  $sc->date = $score->date;
 
                  $sc->save();
+                 $sc2->save();
 
                echo 'Score saved<br>';
 
