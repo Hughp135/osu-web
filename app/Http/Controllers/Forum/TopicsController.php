@@ -56,7 +56,7 @@ class TopicsController extends Controller
     {
         $forum = Forum::findOrFail($forum_id);
 
-        $this->authorizePost($forum, null);
+        $this->authorizePost($forum, $forum_id);
 
         $cover = fractal_item_array(
             TopicCover::findForUse(Request::old('cover_id'), Auth::user()),

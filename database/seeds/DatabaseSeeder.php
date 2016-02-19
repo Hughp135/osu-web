@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+
       // Users, Stats, Ranks, Scores, Events and Beatmaps/sets
           // $this->command->info('Seeding Users, Stats and Beatmaps using zip data...');
           // $this->runUserBeatmapSeeder();
@@ -18,6 +19,8 @@ class DatabaseSeeder extends Seeder
      // Forums, topics, posts etc
           $this->command->info('Seeding Forum Data...');
           $this->runForumSeeder();
+
+
 
     }
 
