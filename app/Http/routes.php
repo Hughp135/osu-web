@@ -46,6 +46,8 @@ Route::get('/usertest', 'UsersController@generateUsers');
 Route::get('/home/news', ['as' => 'news', 'uses' => 'HomeController@getNews']);
 Route::get('/home/download', ['as' => 'download', 'uses' => 'HomeController@getDownload']);
 Route::get('/home/changelog', ['as' => 'changelog', 'uses' => 'HomeController@getChangelog']);
+Route::get('/home/support', ['as' => 'support-the-game', 'uses' => 'HomeController@supportTheGame']);
+
 Route::get('/icons', 'HomeController@getIcons');
 
 // beatmaps section
@@ -81,8 +83,6 @@ Route::post('/community/live', ['as' => 'live', 'uses' => 'CommunityController@p
 
 Route::get('/community/chat', ['as' => 'chat', 'uses' => 'CommunityController@getChat']);
 Route::get('/community/profile/{id}', function ($id) { return Redirect::route('users.show', $id); });
-
-Route::get('/community/support', ['as' => 'community.support', 'uses' => 'CommunityController@getSupport']);
 
 Route::get('/u/{id}', ['as' => 'users.show', 'uses' => 'UsersController@show']);
 
