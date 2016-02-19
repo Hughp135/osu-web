@@ -70,7 +70,6 @@ class BeatmapSet extends Model
         'download_disabled_url',
         'displaytitle',
         'approvedby_id',
-        'difficulty_names',
         'thread_icon_date',
         'thread_id',
     ];
