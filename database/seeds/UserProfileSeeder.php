@@ -54,8 +54,12 @@ class UserProfileSeeder extends Seeder
             $playcount->save();
 
             $bm = $bms[rand(0,count($bms)-1)];
-            if (DB::table('osu_leaders')->where('user_id', $usr_id)->where('beatmap_id', $bm['beatmap_id'])->first()) {
-              DB::table('osu_leaders')->where('user_id', $usr_id)->where('beatmap_id', $bm['beatmap_id'])->delete();
+            if (DB::table('osu_leaders')->where('beatmap_id', $bm['beatmap_id'])->first()) {
+              $bm = $bms[rand(0,count($bms)-1)];
+              // try once more
+              if (DB::table('osu_leaders')->where('beatmap_id', $bm['beatmap_id'])->first()) {
+                DB::table('osu_leaders')->where('beatmap_id', $bm['beatmap_id'])->delete();
+              }
             }
             $leader = new App\Models\BeatmapLeader\Osu;
             $leader->beatmap_id = $bm['beatmap_id'];
