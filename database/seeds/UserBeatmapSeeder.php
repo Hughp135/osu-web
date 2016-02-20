@@ -11,7 +11,7 @@ class UserBeatmapSeeder extends Seeder
      */
     public function run()
     {
-      //DB::table('phpbb_user_group')->delete();
+      DB::table('phpbb_user_group')->delete();
 
       $datapath = base_path().'/database/data/json/';
       // USERS

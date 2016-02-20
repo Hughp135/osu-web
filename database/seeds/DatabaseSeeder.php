@@ -18,10 +18,7 @@ class DatabaseSeeder extends Seeder
 
      // Forums, topics, posts etc
           $this->command->info('Seeding Forum Data...');
-        $this->runForumSeeder();
-
-
-
+          $this->runForumSeeder();
     }
 
     public function runForumSeeder(){
