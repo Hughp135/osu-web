@@ -40,11 +40,6 @@ if (Config::get('app.debug')) {
     }]);
 }
 
-Route::get('/usertest', 'TestController@generateUsers');
-Route::get('/usertest2', 'TestController2@loadFileTest');
-Route::get('/forumtest', 'TestController3@forumTest');
-
-
 Route::get('/home/news', ['as' => 'news', 'uses' => 'HomeController@getNews']);
 Route::get('/home/download', ['as' => 'download', 'uses' => 'HomeController@getDownload']);
 Route::get('/home/changelog', ['as' => 'changelog', 'uses' => 'HomeController@getChangelog']);
