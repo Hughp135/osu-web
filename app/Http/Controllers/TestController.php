@@ -39,6 +39,7 @@ class TestController extends Controller{
     $api = '&k='.$api_key;
 
     $users = ['cookiezi', 'azer', 'doomsday', 'oxycodone', 'kynan', 'I will be back', 'Hot Korean Girl', 'ifailedatlife'];
+    // $users = ['cookiezi'];
 
     foreach ($users as $user)
       {
@@ -265,7 +266,7 @@ class TestController extends Controller{
 
             try {
             $sc = new \App\Models\Score\Osu;
-            $sc2 = new \App\Models\Score\Osu;
+            $sc2 = new \App\Models\Score\Best\Osu;
 
               $sc->user_id = $u->user_id;
               $sc->beatmap_id = $score->beatmap_id;
@@ -309,8 +310,8 @@ class TestController extends Controller{
           } catch (\Illuminate\Database\QueryException $e) {
               echo ' Unable to save Score';
             }
-            $sc->enabled_mods_val = 0;
-            $sc2->enabled_mods_val = 0;
+            $sc->enabled_mods_val = $score->enabled_mods;
+            $sc2->enabled_mods_val = $score->enabled_mods;
             $scores_array[] = $sc;
             $scores_best_array[] = $sc2;
           } // end foreach user best as score

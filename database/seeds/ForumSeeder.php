@@ -55,6 +55,8 @@ class ForumSeeder extends Seeder
 
       } catch (\Illuminate\Database\QueryException $e) {
         echo $e->getMessage().'\r\n';
+      } catch (Exception $ex) {
+        echo $ex->getMessage().'\r\n';
       }
 
     }
