@@ -34,9 +34,6 @@ class BeatmapController extends Controller
 
     public function index()
     {
-        // test
-        // return (BeatmapSet::listing());
-
         $fractal = new Manager();
         $languages = Language::listing();
         $genres = Genre::listing();
