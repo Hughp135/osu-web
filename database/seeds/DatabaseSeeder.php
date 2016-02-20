@@ -13,12 +13,12 @@ class DatabaseSeeder extends Seeder
     {
 
       // Users, Stats, Ranks, Scores, Events and Beatmaps/sets
-          // $this->command->info('Seeding Users, Stats and Beatmaps using zip data...');
-          // $this->runUserBeatmapSeeder();
+          $this->command->info('Seeding Users, Stats and Beatmaps using zip data...');
+          $this->runUserBeatmapSeeder();
 
      // Forums, topics, posts etc
           $this->command->info('Seeding Forum Data...');
-          $this->runForumSeeder();
+        $this->runForumSeeder();
 
 
 

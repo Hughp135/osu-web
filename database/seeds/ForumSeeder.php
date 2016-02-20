@@ -18,6 +18,7 @@ class ForumSeeder extends Seeder
         DB::table('phpbb_forums')->delete();
         DB::table('phpbb_topics')->delete();
         DB::table('phpbb_posts')->delete();
+                
         $forums = [];
 
         // Create 3 forums

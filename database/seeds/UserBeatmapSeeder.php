@@ -11,6 +11,8 @@ class UserBeatmapSeeder extends Seeder
      */
     public function run()
     {
+      //DB::table('phpbb_user_group')->delete();
+
       $datapath = base_path().'/database/data/json/';
       // USERS
 
@@ -42,6 +44,9 @@ class UserBeatmapSeeder extends Seeder
             'user_password'=> password_hash(md5("password"), PASSWORD_BCRYPT)
           ]);
           $user->save();
+          $userGroup = new \App\Models\UserGroup;
+          $userGroup->group_id = 5; // Admin
+          $user->userGroups()->save($userGroup);
           $savedusers[] = $u->username;
         } // END USERS
 
