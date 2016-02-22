@@ -14,33 +14,30 @@ class DatabaseSeeder extends Seeder
 
       // Users, Stats, Ranks, Scores, Events and Beatmaps/sets
           $this->command->info('Seeding Users, Stats and Beatmaps using zip data...');
-          $this->runUserBeatmapSeeder();
+        $this->runUserBeatmapSeeder();
 
      // Forums, topics, posts etc
           $this->command->info('Seeding Forum Data...');
-          $this->call(ForumSeeder::class);
+        $this->call(ForumSeeder::class);
 
       // Users Profile Data (e.g. favourite maps, first place ranks, playcounts)
           $this->command->info('Seeding Users Profile Data (e.g. favourite maps, first place ranks, playcounts)');
-          $this->call(UserProfileSeeder::class);
+        $this->call(UserProfileSeeder::class);
+
+      // Miscellaneous Data (e.g. counts)
+          $this->command->info('Seeding Miscellaneous Data');
+        $this->call(MiscSeeder::class);
     }
 
-    public function runUserBeatmapSeeder(){
-      $zip = new ZipArchive;
-      $datapath = base_path().'/database/data/';
-      $res = $zip->open($datapath.'jsondata.zip');
+    public function runUserBeatmapSeeder()
+    {
+        $datapath = base_path().'/database/data/json/';
 
-      if ($res === TRUE) {
-
-        $zip->extractTo($datapath.'/json/');
-        $zip->close();
-        $this->command->info('Unzipped Data files');
-        $this->command->info('Seeding Users, User Ranks & Stats, Beatmaps and Beatmapsets...');
-
-        $this->call(UserBeatmapSeeder::class);
-
-      } else {
-        $this->command->info('Error: Users and Beatmaps not seeded. Couldnt unzip database/data/jsondata.zip. Does the file exist?');
-      }
+        $filelist = [$datapath.'beatmaps.json', $datapath.'beatmapsets.json', $datapath.'events.json', $datapath.'hist.json', $datapath.'scores_best.json', $datapath.'scores.json', $datapath.'stats.json', $datapath.'users.json'];
+        foreach ($filelist as $file) {
+            if (!file_exists($file)) {
+                $this->command->error('Error: Couldnt find json file at '.$file.' required for seeding UserBeatmapSeeder');
+            }
+        }
     }
 }
