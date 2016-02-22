@@ -24,8 +24,6 @@ use App\Transformers\UserTransformer;
 use Auth;
 use Request;
 use ZipArchive;
-use Illuminate\Contracts\Filesystem\Factory;
-use League\Flysystem\Filesystem;
 use Storage;
 
 class TestController extends Controller{
@@ -271,7 +269,7 @@ class TestController extends Controller{
 
             try {
             $sc = new \App\Models\Score\Osu;
-            $sc2 = new \App\Models\Score\Osu;
+            $sc2 = new \App\Models\Score\Best\Osu;
 
               $sc->user_id = $u->user_id;
               $sc->beatmap_id = $score->beatmap_id;
@@ -315,8 +313,8 @@ class TestController extends Controller{
           } catch (\Illuminate\Database\QueryException $e) {
               echo ' Unable to save Score';
             }
-            $sc->enabled_mods_val = 0;
-            $sc2->enabled_mods_val = 0;
+            $sc->enabled_mods_val = $score->enabled_mods;
+            $sc2->enabled_mods_val = $score->enabled_mods;
             $scores_array[] = $sc;
             $scores_best_array[] = $sc2;
           } // end foreach user best as score
