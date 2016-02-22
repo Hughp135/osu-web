@@ -24,6 +24,9 @@ use App\Transformers\UserTransformer;
 use Auth;
 use Request;
 use ZipArchive;
+use Illuminate\Contracts\Filesystem\Factory;
+use League\Flysystem\Filesystem;
+use Storage;
 
 class TestController extends Controller{
 
@@ -39,6 +42,9 @@ class TestController extends Controller{
     $api = '&k='.$api_key;
 
     $users = ['cookiezi', 'azer', 'doomsday', 'oxycodone', 'kynan', 'I will be back', 'Hot Korean Girl', 'ifailedatlife'];
+    $beatmaplimit = 20;
+    // $users = ['cookiezi'];
+    // $beatmaplimit = 5;
 
     foreach ($users as $user)
       {
@@ -151,7 +157,7 @@ class TestController extends Controller{
 
     // score stuff
         // Get the top 20 scores for the user
-        $user_best = json_decode(file_get_contents($base_url. 'get_user_best?u='. $u->user_id . '&limit=20'. $api ));
+        $user_best = json_decode(file_get_contents($base_url. 'get_user_best?u='. $u->user_id . '&limit='.$beatmaplimit. $api ));
         ++$count_api_calls;
         if (!empty($user_best)) {
           foreach ($user_best as $score) {
@@ -324,38 +330,46 @@ class TestController extends Controller{
     echo '<h3>API Calls Made: '.$count_api_calls.'</h3>';
 
     // Create a ZIP file to contain the pdfs
-      $zip = new ZipArchive();
+      // $zip = new ZipArchive();
       $datapath = base_path().'/database/data';
       $zippath = base_path().'/database/data/jsondata.zip';
 
       // For some reason the ZipArchive function won't create new directories, so create new directory if needed.
-      if (!file_exists($datapath)) {
+      // if (!file_exists($datapath)) {
+      //   mkdir($datapath, 0777, true);
+      // }
+
+      // if ($zip->open($zippath, ZipArchive::CREATE)!==TRUE) {
+      //   dd("Server Error: cannot open <$zippath>\n");
+      // }
+      //
+      // // Add both pdf files to the zip and save.
+      // $zip->addFromString('users.json', json_encode($users_array, JSON_PRETTY_PRINT));
+      // $zip->addFromString('stats.json', json_encode($stats_array, JSON_PRETTY_PRINT));
+      // $zip->addFromString('hist.json', json_encode($hist_array, JSON_PRETTY_PRINT));
+      // $zip->addFromString('events.json', json_encode($events_array, JSON_PRETTY_PRINT));
+      // $zip->addFromString('beatmaps.json', json_encode($beatmap_array, JSON_PRETTY_PRINT));
+      // $zip->addFromString('beatmapsets.json', json_encode($beatmapset_array, JSON_PRETTY_PRINT));
+      // $zip->addFromString('scores.json', json_encode($scores_array, JSON_PRETTY_PRINT));
+      // $zip->addFromString('scores_best.json', json_encode($scores_best_array, JSON_PRETTY_PRINT));
+      // $zip->close();
+      if (!is_dir($datapath)) {
+        // dir doesn't exist, make it
         mkdir($datapath, 0777, true);
       }
 
-      if ($zip->open($zippath, ZipArchive::CREATE)!==TRUE) {
-        dd("Server Error: cannot open <$zippath>\n");
-      }
 
-      // Add both pdf files to the zip and save.
-      $zip->addFromString('users.json', json_encode($users_array));
-      $zip->addFromString('stats.json', json_encode($stats_array));
-      $zip->addFromString('hist.json', json_encode($hist_array));
-      $zip->addFromString('events.json', json_encode($events_array));
-      $zip->addFromString('beatmaps.json', json_encode($beatmap_array));
-      $zip->addFromString('beatmapsets.json', json_encode($beatmapset_array));
-      $zip->addFromString('scores.json', json_encode($scores_array));
-      $zip->addFromString('scores_best.json', json_encode($scores_best_array));
-      $zip->close();
 
-      dd($zip);
-        // \Storage::put('users.json', json_encode($users_array));
-        // \Storage::put('stats.json', json_encode($stats_array));
-        // \Storage::put('hist.json', json_encode($hist_array));
-        // \Storage::put('events.json', json_encode($events_array));
-        // \Storage::put('beatmaps.json', json_encode($beatmap_array));d
-        // \Storage::put('beatmapsets.json', json_encode($beatmapset_array));
-        // \Storage::put('scores.json', json_encode($scores_array));
+        Storage::put('users.json', json_encode($users_array, JSON_PRETTY_PRINT));
+        Storage::put('stats.json', json_encode($stats_array, JSON_PRETTY_PRINT));
+        Storage::put('hist.json', json_encode($hist_array, JSON_PRETTY_PRINT));
+        Storage::put('events.json', json_encode($events_array, JSON_PRETTY_PRINT));
+        Storage::put('beatmaps.json', json_encode($beatmap_array, JSON_PRETTY_PRINT));
+        Storage::put('beatmapsets.json', json_encode($beatmapset_array, JSON_PRETTY_PRINT));
+        Storage::put('scores.json', json_encode($scores_array, JSON_PRETTY_PRINT));
+        Storage::put('scores_best.json', json_encode($scores_best_array, JSON_PRETTY_PRINT));
+
+              // dd($zip);
   }
 
 
