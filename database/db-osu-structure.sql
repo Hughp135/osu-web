@@ -323,7 +323,6 @@ CREATE TABLE `osu_favouritemaps` (
   `user_id` mediumint(9) unsigned NOT NULL,
   `beatmapset_id` mediumint(9) unsigned NOT NULL,
   `dateadded` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`user_id`,`beatmapset_id`),
   KEY `beatmapset_id` (`beatmapset_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1626,8 +1625,8 @@ CREATE TABLE `forum_forum_covers` (
   `user_id` mediumint(8) unsigned DEFAULT NULL,
   `hash` varchar(255) NOT NULL,
   `ext` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` timestamp,
+  `updated_at` timestamp,
   PRIMARY KEY (`id`),
   UNIQUE KEY `forum_forum_covers_forum_id_unique` (`forum_id`),
   KEY `forum_forum_covers_user_id_index` (`user_id`),
@@ -1645,8 +1644,8 @@ CREATE TABLE `forum_topic_covers` (
   `user_id` mediumint(8) unsigned DEFAULT NULL,
   `hash` varchar(255) NOT NULL,
   `ext` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` timestamp,
+  `updated_at` timestamp,
   PRIMARY KEY (`id`),
   KEY `forum_topic_covers_topic_id_index` (`topic_id`),
   KEY `forum_topic_covers_user_id_index` (`user_id`),

@@ -24,7 +24,7 @@ class TestController2 extends Controller{
 
 
   public function loadFileTest(){
-$datapath = base_path().'/database/data/';
+$datapath = base_path().'/database/data/json/';
   // USERS
   echo '<h3>Users</h3>';
     $users = json_decode(file_get_contents($datapath.'users.json'));

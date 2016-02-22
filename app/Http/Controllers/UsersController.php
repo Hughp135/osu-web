@@ -133,7 +133,4 @@ class UsersController extends Controller
 
         return view('users.show', compact('user', 'userArray', 'achievements'));
     }
-
-  
-
 }
