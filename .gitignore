@@ -81,3 +81,5 @@ sftp-settings.json
 composer-installer
 
 /database/data/json/
+
+/vagrant/
