@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BeatmapSeeder::class);
 
       // Users, Stats, Ranks, Scores, Events
-          $this->command->info('Seeding Users/Stats...');
+          $this->command->info('Seeding Users and Stats...');
         $this->call(UserSeeder::class);
 
      // Forums, topics, posts etc
@@ -36,13 +36,13 @@ class DatabaseSeeder extends Seeder
 
     public function runUserBeatmapSeeder()
     {
-        $datapath = base_path().'/database/data/json/';
-
-        $filelist = [$datapath.'beatmaps.json', $datapath.'beatmapsets.json', $datapath.'events.json', $datapath.'hist.json', $datapath.'scores_best.json', $datapath.'scores.json', $datapath.'stats.json', $datapath.'users.json'];
-        foreach ($filelist as $file) {
-            if (!file_exists($file)) {
-                $this->command->error('Error: Couldnt find json file at '.$file.' required for seeding UserBeatmapSeeder');
-            }
-        }
+        // $datapath = base_path().'/database/data/json/';
+        //
+        // $filelist = [$datapath.'beatmaps.json', $datapath.'beatmapsets.json', $datapath.'events.json', $datapath.'hist.json', $datapath.'scores_best.json', $datapath.'scores.json', $datapath.'stats.json', $datapath.'users.json'];
+        // foreach ($filelist as $file) {
+        //     if (!file_exists($file)) {
+        //         $this->command->error('Error: Couldnt find json file at '.$file.' required for seeding UserBeatmapSeeder');
+        //     }
+        // }
     }
 }
