@@ -1,21 +1,21 @@
 <?php
 
-$factory->define(App\Models\UserStatistics\Osu::class, function (Faker\Generator $faker) {
+function generateStats() {
+  // Base template for all modes to use
 
-  // Calculatable stats
-  $acc = (float)(rand(750000,1000000)) / 10000; // 75.0000 - 100.0000
+  $acc = (float)(rand(850000,1000000)) / 10000; // 85.0000 - 100.0000
   $score = (float)rand(500000,2000000000) * 2; // 500k - 4bil
   $playcount = rand(1000,250000); // 1k - 250k
-  $common_countries = ['US', 'JP', 'CN', 'DE', 'TW', 'RU', 'KR', 'PL', 'CA', 'FR', 'BR', 'GB', 'AU'];
-  $rank = rand(1,500000);
+  $rank = rand(1,500000); // 1 - 500k
 
-  return ([
-    'count300' => rand(10000,5000000),
-    'count100' => rand(10000,2000000),
-    'count50' => rand(10000,1000000),
-    'countMiss' => rand(10000,1000000),
-    'accuracy_total' => rand(1000,250000), // not sure what this field is meant to be
-    'accuracy_count' => rand(1000,250000), // not sure what this field is meant to be
+  return [
+    'level'  => rand(1,104),
+    'count300' => rand(10000,5000000), // 10k to 5mil
+    'count100' => rand(10000,2000000), // 10k to 2mil
+    'count50' => rand(10000,1000000), // 10k to 1mil
+    'countMiss' => rand(10000,1000000), // 10k to 1mil
+    'accuracy_total' => rand(1000,250000), // 1k to 250k. unsure what field is for
+    'accuracy_count' => rand(1000,250000), // 1k to 250k. unsure what field is for
     'accuracy' => $acc,
     'accuracy_new' => $acc,
     'playcount' => $playcount,
@@ -29,7 +29,22 @@ $factory->define(App\Models\UserStatistics\Osu::class, function (Faker\Generator
     'rank' => $rank,
     'rank_score' => $score,
     'rank_score_index' => rand(1,500000),
-    'country_acronym' => $common_countries[array_rand($common_countries)],
     'max_combo' => rand(500,4000),
-  ]);
+  ];
+}
+
+$factory->define(App\Models\UserStatistics\Osu::class, function (Faker\Generator $faker) {
+  return generateStats();
+});
+
+$factory->define(App\Models\UserStatistics\Fruits::class, function (Faker\Generator $faker) {
+  return generateStats();
+});
+
+$factory->define(App\Models\UserStatistics\Mania::class, function (Faker\Generator $faker) {
+  return generateStats();
+});
+
+$factory->define(App\Models\UserStatistics\Taiko::class, function (Faker\Generator $faker) {
+  return generateStats();
 });

@@ -11,7 +11,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-
       // Beatmaps andsets
           $this->command->info('Seeding Beatmaps...');
         $this->call(BeatmapSeeder::class);
@@ -31,6 +30,7 @@ class DatabaseSeeder extends Seeder
       // Miscellaneous Data (e.g. counts)
           $this->command->info('Seeding Miscellaneous Data');
         $this->call(MiscSeeder::class);
+
     }
 
 
