@@ -42,6 +42,7 @@ if (Config::get('app.debug')) {
 
 Route::get('/usertest', 'TestController@generateUsers');
 Route::get('/usertest2', 'TestController2@loadFileTest');
+Route::get('/seedtest', 'TestController3@test');
 Route::get('/forumtest', 'TestController3@forumTest');
 
 
