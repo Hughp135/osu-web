@@ -22,7 +22,7 @@ class UserBeatmapSeeder extends Seeder
         // USERS
 
         // Store saved / overwritten data in arrays
-        $savedusers = [];
+            $savedusers = [];
             $overusers = [];
             $overstats = [];
             $overhist = [];
