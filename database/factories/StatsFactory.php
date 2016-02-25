@@ -6,7 +6,7 @@ function generateStats() {
   $acc = (float)(rand(850000,1000000)) / 10000; // 85.0000 - 100.0000
   $score = (float)rand(500000,2000000000) * 2; // 500k - 4bil
   $playcount = rand(1000,250000); // 1k - 250k
-  $rank = rand(1,500000); // 1 - 500k
+  
 
   return [
     'level'  => rand(1,104),
@@ -26,7 +26,6 @@ function generateStats() {
     'x_rank_count' => round($playcount * 0.001),
     's_rank_count' => round($playcount * 0.05),
     'a_rank_count' => round($playcount * 0.2),
-    'rank' => $rank,
     'rank_score' => $score,
     'rank_score_index' => rand(1,500000),
     'max_combo' => rand(500,4000),

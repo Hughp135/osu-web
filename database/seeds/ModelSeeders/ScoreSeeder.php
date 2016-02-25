@@ -45,7 +45,7 @@ class ScoreSeeder extends Seeder
         foreach ($osuBeatmaps as $bm) {
           $bms = $allBeatmapSets->find($bm->beatmapset_id);
           $maxcombo = rand(1,5000);
-          $possible_mods = [16,24,64,72]; // hr, hd/hr, dt, hd/dt
+          $possible_mods = [0,16,24,64,72]; // hr, hd/hr, dt, hd/dt
           $sc = App\Models\Score\Osu::create([
             'user_id' => $u->user_id,
             'beatmap_id' => $bm->beatmap_id,
@@ -61,6 +61,7 @@ class ScoreSeeder extends Seeder
             'countkatu' => round($maxcombo*0.05),
             'enabled_mods' => $possible_mods[array_rand($possible_mods)],
             'date' => rand(1451606400, time()), // random timestamp between 01/01/2016 and now,
+            'pass' => $faker->boolean(85), //85% chance of pass
           ]);
 
           $sc2 = App\Models\Score\Best\Osu::create([
@@ -78,15 +79,16 @@ class ScoreSeeder extends Seeder
             'countkatu' => round($maxcombo*0.05),
             'enabled_mods' => $possible_mods[array_rand($possible_mods)],
             'date' => rand(1451606400, time()), // random timestamp between 01/01/2016 and now,
-            'pp' => 727-$faker->biasedNumberBetween(10,727),
+            'pp' => $faker->biasedNumberBetween(10,100) * 1.5 * $bm->difficultyrating,
           ]);
+
         }
 
         //Taiko scores
-        foreach ($osuBeatmaps as $bm) {
+        foreach ($taikoBeatmaps as $bm) {
           $bms = $allBeatmapSets->find($bm->beatmapset_id);
           $maxcombo = rand(1,5000);
-          $possible_mods = [16,24,64,72]; // hr, hd/hr, dt, hd/dt
+          $possible_mods = [0, 16,24,64,72]; // hr, hd/hr, dt, hd/dt
           $sc3 = App\Models\Score\Taiko::create([
             'user_id' => $u->user_id,
             'beatmap_id' => $bm->beatmap_id,
@@ -120,9 +122,93 @@ class ScoreSeeder extends Seeder
             'countkatu' => round($maxcombo*0.05),
             'enabled_mods' => $possible_mods[array_rand($possible_mods)],
             'date' => rand(1451606400, time()), // random timestamp between 01/01/2016 and now,
-            'pp' => 680-$faker->biasedNumberBetween(10,727),
+            'pp' => $faker->biasedNumberBetween(10,100) * 1.3 * $bm->difficultyrating,
           ]);
-        }
+        } // end taiko
+
+        //Fruits scores
+        foreach ($fruitsBeatmaps as $bm) {
+          $bms = $allBeatmapSets->find($bm->beatmapset_id);
+          $maxcombo = rand(1,5000);
+          $possible_mods = [0, 16,24,64,72]; // hr, hd/hr, dt, hd/dt
+          $sc5 = App\Models\Score\Fruits::create([
+            'user_id' => $u->user_id,
+            'beatmap_id' => $bm->beatmap_id,
+            'beatmapset_id' => $bm->beatmapset_id,
+            'score' => rand(50000,100000000),
+            'maxcombo' => $maxcombo,
+            'rank' => rand(1,1000),
+            'count300' => round($maxcombo*0.8),
+            'count100' => rand(0, round($maxcombo*0.15)),
+            'count50' => rand(0, round($maxcombo*0.05)),
+            'countgeki' => round($maxcombo*0.3),
+            'countmiss' => round($maxcombo*0.05),
+            'countkatu' => round($maxcombo*0.05),
+            'enabled_mods' => $possible_mods[array_rand($possible_mods)],
+            'date' => rand(1451606400, time()), // random timestamp between 01/01/2016 and now,
+            'pass' => $faker->boolean(85), //85% chance of pass
+          ]);
+
+          $sc6 = App\Models\Score\Best\Fruits::create([
+            'user_id' => $u->user_id,
+            'beatmap_id' => $bm->beatmap_id,
+            'beatmapset_id' => $bm->beatmapset_id,
+            'score' => rand(50000,100000000),
+            'maxcombo' => $maxcombo,
+            'rank' => rand(1,1000),
+            'count300' => round($maxcombo*0.8),
+            'count100' => rand(0, round($maxcombo*0.15)),
+            'count50' => rand(0, round($maxcombo*0.05)),
+            'countgeki' => round($maxcombo*0.3),
+            'countmiss' => round($maxcombo*0.05),
+            'countkatu' => round($maxcombo*0.05),
+            'enabled_mods' => $possible_mods[array_rand($possible_mods)],
+            'date' => rand(1451606400, time()), // random timestamp between 01/01/2016 and now,
+            'pp' => $faker->biasedNumberBetween(10,100) * 1.3 * $bm->difficultyrating,
+          ]);
+        } // end fruits
+
+        //Mania scores
+        foreach ($maniaBeatmaps as $bm) {
+          $bms = $allBeatmapSets->find($bm->beatmapset_id);
+          $maxcombo = rand(1,5000);
+          $possible_mods = [0, 16,24,64,72]; // hr, hd/hr, dt, hd/dt
+          $sc7 = App\Models\Score\Mania::create([
+            'user_id' => $u->user_id,
+            'beatmap_id' => $bm->beatmap_id,
+            'beatmapset_id' => $bm->beatmapset_id,
+            'score' => rand(50000,100000000),
+            'maxcombo' => $maxcombo,
+            'rank' => rand(1,1000),
+            'count300' => round($maxcombo*0.8),
+            'count100' => rand(0, round($maxcombo*0.15)),
+            'count50' => rand(0, round($maxcombo*0.05)),
+            'countgeki' => round($maxcombo*0.3),
+            'countmiss' => round($maxcombo*0.05),
+            'countkatu' => round($maxcombo*0.05),
+            'enabled_mods' => $possible_mods[array_rand($possible_mods)],
+            'date' => rand(1451606400, time()), // random timestamp between 01/01/2016 and now,
+            'pass' => $faker->boolean(85), //85% chance of pass
+          ]);
+
+          $sc8 = App\Models\Score\Best\Mania::create([
+            'user_id' => $u->user_id,
+            'beatmap_id' => $bm->beatmap_id,
+            'beatmapset_id' => $bm->beatmapset_id,
+            'score' => rand(50000,100000000),
+            'maxcombo' => $maxcombo,
+            'rank' => rand(1,1000),
+            'count300' => round($maxcombo*0.8),
+            'count100' => rand(0, round($maxcombo*0.15)),
+            'count50' => rand(0, round($maxcombo*0.05)),
+            'countgeki' => round($maxcombo*0.3),
+            'countmiss' => round($maxcombo*0.05),
+            'countkatu' => round($maxcombo*0.05),
+            'enabled_mods' => $possible_mods[array_rand($possible_mods)],
+            'date' => rand(1451606400, time()), // random timestamp between 01/01/2016 and now,
+            'pp' => $faker->biasedNumberBetween(10,100) * 2 * $bm->difficultyrating,
+          ]);
+        } // end mania
       }
       App\Models\Score\Model::reguard();
     }

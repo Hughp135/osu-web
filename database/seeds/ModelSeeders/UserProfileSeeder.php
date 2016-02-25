@@ -30,8 +30,6 @@ class UserProfileSeeder extends Seeder
             $usr_id = $usr->user_id;
 
             foreach ($bms as $bm) {
-                // $bm = array_rand($bms, 1);
-                // dd($bm);
                 if (DB::table('osu_favouritemaps')->where('user_id', $usr_id)->where('beatmapset_id', $bm['beatmapset_id'])->first()) {
                     DB::table('osu_favouritemaps')->where('user_id', $usr_id)->where('beatmapset_id', $bm['beatmapset_id'])->delete();
                 }

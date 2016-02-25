@@ -43,21 +43,29 @@ class UserSeeder extends Seeder
       $common_countries = ['US', 'JP', 'CN', 'DE', 'TW', 'RU', 'KR', 'PL', 'CA', 'FR', 'BR', 'GB', 'AU'];
       $country_code = $common_countries[array_rand($common_countries)];
 
-        $st = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Osu::class)->create(['country_acronym'=>$country_code]));
-
-        $st1 = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Taiko::class)->create(['country_acronym'=>$country_code]));
+        $st = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Osu::class)->create(['country_acronym'=>$country_code, 'rank' => rand(1,500000)]));
+        $st1 = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Taiko::class)->create(['country_acronym'=>$country_code, 'rank' => rand(1,500000)]));
         if ($st1) ++$this->stats_count;
-        $st2 = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Fruits::class)->create(['country_acronym'=>$country_code]));
+        $st2 = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Fruits::class)->create(['country_acronym'=>$country_code, 'rank' => rand(1,500000)]));
         if ($st2) ++$this->stats_count;
-        $st3 = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Mania::class)->create(['country_acronym'=>$country_code]));
+        $st3 = $u->statisticsOsu()->save(factory(App\Models\UserStatistics\Mania::class)->create(['country_acronym'=>$country_code, 'rank' => rand(1,500000)]));
         if ($st3) ++$this->stats_count;
       // END USER STATS
 
       // RANK HISTORY
-        $rank = $st->rank;
+
 
         // Create rank histories for all 3 modes
-        for ($c=0; $c<4; $c++) {
+        for ($c=0; $c<=3; $c++) {
+          
+          switch ($c){
+            case 0: $rank = $st->rank; break;
+            case 1: $rank = $st1->rank; break;
+            case 2: $rank = $st2->rank; break;
+            case 3: $rank = $st3->rank; break;
+            default: $rank = $st->rank;
+          }
+
           $hist = new App\Models\RankHistory;
 
           $hist->mode = $c; // 0 = standard, 1 = taiko etc...
@@ -66,15 +74,16 @@ class UserSeeder extends Seeder
 
           // Start with current rank, and move down (back in time) to r0
           $hist->r89 = $rank;
+
           for ($i=88; $i>=0; $i--) {
             $r = 'r'.$i;
             $prev_r = 'r'.($i+1);
             $prev_rank = $hist->$prev_r;
             // We wouldn't expect the user to improve every day
-            $does_improve = $this->faker->boolean($play_freq); // 25% chance of improving rank today
+            $does_improve = $this->faker->boolean($play_freq);
             if ($does_improve === true) {
-              $extreme_improvement = $this->faker->boolean(0.01); // 1% chance of extreme improvement today
-              if ($extreme_improvement) {
+              $extreme_improvement = $this->faker->boolean(2); // 1% chance of extreme improvement today
+              if ($extreme_improvement === true) {
                 $improvement_modifier = 1.5;
               } else {
                 $improvement_modifier = $this->improvement_speeds[array_rand($this->improvement_speeds)];
