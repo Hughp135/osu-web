@@ -15,15 +15,23 @@ class DatabaseSeeder extends Seeder
           $this->command->info('Seeding Beatmaps...');
         $this->call(BeatmapSeeder::class);
 
-      // Users, Stats, Ranks, Scores, Events
+      // Users, Stats, Ranks
           $this->command->info('Seeding Users and Stats...');
         $this->call(UserSeeder::class);
+
+      // Events
+          $this->command->info('Seeding Events...');
+        $this->call(UserSeeder::class);
+
+      // Scores
+          $this->command->info('Seeding Scores...');
+        $this->call(ScoreSeeder::class);
 
      // Forums, topics, posts etc
           $this->command->info('Seeding Forum Data...');
         $this->call(ForumSeeder::class);
 
-      // Users Profile Data (e.g. favourite maps, first place ranks, playcounts)
+      // Users Profile Data (Favourite maps, First place ranks, Playcounts)
           $this->command->info('Seeding Users Profile Data (e.g. favourite maps, first place ranks, playcounts)');
         $this->call(UserProfileSeeder::class);
 
