@@ -21,37 +21,21 @@
 
 #beatmaps-listing {
 	text-align: center;
-	padding: 5px 0;
-
-	margin-top: 10px;
-	margin-left: -20px;
-	margin-right: -20px;
 
 	.beatmap-container {
 		opacity: 1;
-		transition: all 120ms ease-in-out;
 
 		&.dimmed {
 			opacity: 0.2;
 		}
-
-		.panel-enter {
-			opacity: 0.01;
-		}
-
-		.panel-enter.panel-enter-active {
-			opacity: 1;
-			transition: all 120ms ease-in-out;
-		}
 	}
 
 	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
-	background: white;
+	background: #eee;
 
 	.sorting {
-		padding: 10px;
 		text-align: left;
-		margin-left: 35px;
+		margin-bottom: @spacing;
 		font-size: 12px;
 		a {
 			margin-right: 15px;
@@ -74,15 +58,13 @@
 	}
 
 	.beatmaps-load-more {
-		padding: 10px;
+		padding-top: 10px;
 		i {
 			display: none;
 		}
 
 		&.no_more {
-			a {
-				display: none;
-			}
+			display: none;
 		}
 
 		&.loading {
@@ -105,9 +87,9 @@
 	margin-right: -20px;
 
 	.background {
-		background-position: top center;
+		background-position: center;
 		background-repeat: no-repeat;
-		background-size: 100% auto;
+		background-size: cover;
 		top: 0;
 		left: 0;
 		width: 100%;
@@ -179,20 +161,12 @@
 
 		.toggle {
 			.text-center;
-			-webkit-transition: 120ms ease-in-out;
-							transition: 120ms ease-in-out;
 		}
-
 
 		.selector {
 			opacity: 0;
-			-webkit-transition: 120ms ease-in-out;
-							transition: 120ms ease-in-out;
 		}
 	}
-
-	-webkit-transition: 120ms ease-in-out;
-					transition: 120ms ease-in-out;
 
 	&.expanded {
 		height: 300px;
@@ -214,27 +188,18 @@
 
 	text-align: left;
 
-	width: 400px;
+	width: 100%;
 	height: 175px;
 
 	border-radius: 3px;
 
 	background: #ffffff;
 
-	cursor: pointer;
-
-	margin: 5px;
-
 	&:hover {
 		z-index: @z-index--beatmaps-panel;
-		.panel {
-			.thumb_cover {
-				opacity: 1;
-			}
-		}
 	}
 
-	.panel {
+	.beatmap-panel {
 		position: absolute;
 		left: 0px;
 		top: 0px;
@@ -250,11 +215,10 @@
 		height: 100px;
 
 		.at2x('/images/layout/beatmaps/default-bg.png');
-		background-position: top center !important;
-		background-repeat:no-repeat !important;
-		background-size: 100% auto !important;
+		background-position: center !important;
+		background-size: cover !important;
 
-		text-shadow: 0px 1px 2px fade(#000, 75%);
+		text-shadow: 0px 1px 2px fade(#000, 100%);
 		font-weight: 400;
 		color: #ffffff;
 		font-style: italic;
@@ -305,42 +269,22 @@
 		}
 		overflow: hidden;
 
-		.thumb_gradient {
-			position: absolute;
-			height: 100px;
-			width: 100%;
-			background-image: linear-gradient(to bottom, transparent, fade(#000, 60%));
-			z-index: @z-index--beatmaps-panel - 3;
-		}
 		.thumb {
-			position: absolute;
-			top: -10%;
-			left: -10%;
-			bottom: -10%;
-			right: -10%;
+			color: white;
+			display: block;
 			height: 120px;
-			width: 120%;
-			background-position: top center;
+			background-position: center;
 			background-repeat: no-repeat;
-			background-size: 100% auto;
-			filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feGaussianBlur stdDeviation="3" /></filter></svg>#filter');
-			-webkit-filter: blur(3px);
-							filter: blur(3px);
-		}
-		.thumb_cover {
-			position: absolute;
-			top: -10%;
-			left: -10%;
-			bottom: -10%;
-			right: -10%;
-			height: 120px;
-			width: 120%;
-			background-position: top center;
-			background-repeat: no-repeat;
-			background-size: 100% auto;
-			-webkit-transition: 120ms ease-in-out;
-							transition: 120ms ease-in-out;
-			opacity: 0;
+			background-size: cover;
+			&:before {
+				content: '';
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				background-image: linear-gradient(to bottom, fade(#000, 10%), fade(#000, 70%));
+			}
 		}
 	}
 
@@ -372,8 +316,6 @@
 
 	&:hover .show_on_hover {
 		opacity: 1 !important;
-		-webkit-transition: 120ms ease-in-out;
-						transition: 120ms ease-in-out;
 	}
 
 	.difficulties {

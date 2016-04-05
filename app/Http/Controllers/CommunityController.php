@@ -22,7 +22,8 @@ namespace App\Http\Controllers;
 use Cache;
 use Auth;
 use Redirect;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request as HttpRequest;
+use App\Models\SlackUser;
 
 class CommunityController extends Controller
 {
@@ -40,12 +41,19 @@ class CommunityController extends Controller
     */
     protected $section = 'community';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->middleware('auth', ['only' => ['postSlackAgree']]);
+    }
+
     public function getChat()
     {
         return view('community.chat');
     }
 
-    public function getLive(Request $request)
+    public function getLive(HttpRequest $request)
     {
         $featuredStream = null;
         $streams = Cache::remember('livestreams', 5, function () {
@@ -78,7 +86,7 @@ class CommunityController extends Controller
         return view('community.live', compact('streams', 'featuredStream'));
     }
 
-    public function postLive(Request $request)
+    public function postLive(HttpRequest $request)
     {
         if (Auth::check() !== true || Auth::user()->isGmt() !== true) {
             abort(403);
@@ -95,37 +103,50 @@ class CommunityController extends Controller
         return Redirect::back();
     }
 
-    public function getSupport()
+    public function getSlack()
     {
-        return view('community.support')
-        ->with('data', [
-            // why support's blocks
-            'blocks' => [
-                // localization's name => icon
-                'dev' => 'user',
-                'time' => 'clock-o',
-                'ads' => 'thumbs-up',
-                'goodies' => 'star',
-            ],
+        $isEligible = false;
+        $accepted = false;
+        $isInviteAccepted = false;
+        $supportMail = config('osu.emails.account');
 
-            // supporter's perks
-            'perks' => [
-                // localization's name => icon
-                'osu_direct' => 'search',
-                'auto_downloads' => 'cloud-download',
-                'upload_more' => 'cloud-upload',
-                'early_access' => 'flask',
-                'customisation' => 'picture-o',
-                'beatmap_filters' => 'filter',
-                'yellow_fellow' => 'fire',
-                'speedy_downloads' => 'dashboard',
-                'change_username' => 'magic',
-                'skinnables' => 'paint-brush',
-                'feature_votes' => 'thumbs-up',
-                'sort_options' => 'trophy',
-                'feel_special' => 'heart',
-                'more_to_come' => 'gift',
-            ],
-        ]);
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            $isEligible = $user->isSlackEligible();
+
+            if ($user->slackUser !== null) {
+                $accepted = true;
+                $isInviteAccepted = $user->slackUser->slack_id !== null;
+            }
+        }
+
+        return view('community.slack', compact('isEligible', 'accepted', 'isInviteAccepted', 'supportMail'));
+    }
+
+    public function postSlackAgree()
+    {
+        $user = Auth::user();
+
+        if ($user->isSlackEligible() === false) {
+            return error_popup(trans('errors.community.slack.not-eligible'));
+        }
+
+        $token = config('slack.token');
+        $contents = file_get_contents("https://osu-public.slack.com/api/users.admin.invite?email={$user->user_email}&token={$token}&set_active=true");
+
+        if ($contents === false) {
+            return error_popup(trans('errors.community.slack.slack-error'));
+        }
+
+        $contents = json_decode($contents, true);
+
+        if ($contents['ok'] === true) {
+            $user->slackUser()->create([]);
+
+            return ['ok' => true];
+        } else {
+            return error_popup(trans(trans('errors.community.slack.slack-error')));
+        }
     }
 }

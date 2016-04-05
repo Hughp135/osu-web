@@ -10,6 +10,11 @@ return [
     'beatmaps' => [
         'max' => 50,
     ],
+    'beatmap_processor' => [
+        'mirrors_to_use' => array_map('intval', explode(' ', env('BM_PROCESSOR_MIRRORS', '1'))),
+        'thumbnailer' => env('BM_PROCESSOR_THUMBNAILER', 'http://localhost:4001'),
+        'sentry' => env('BM_PROCESSOR_SENTRY'),
+    ],
     'camo' => [
         'key' => env('CAMO_KEY'),
         'prefix' => env('CAMO_PREFIX', 'https://i.ppy.sh/'),
@@ -31,7 +36,6 @@ return [
         'delayed_shipping_order_message' => env('DELAYED_SHIPPING_ORDER_MESSAGE'),
     ],
     'urls' => [
-        'assets' => env('ASSETS_URL', 'https://assets.ppy.sh/'),
         'legal' => [
             'dmca' => 'https://osu.ppy.sh/p/copyright',
             'tos' => 'https://osu.ppy.sh/p/terms',
@@ -45,7 +49,7 @@ return [
             'osustatus' => 'https://twitter.com/osustatus',
             'server' => 'http://stat.ppy.sh/',
         ],
-        'support-the-game' => 'https://osu.ppy.sh/p/support',
+        'support-the-game' => 'https://osu.ppy.sh/p/support#transactionarea',
         'user' => [
             'kudosu' => 'https://osu.ppy.sh/wiki/Kudosu',
             'rules' => 'https://osu.ppy.sh/wiki/Osu!:Rules',

@@ -21,7 +21,8 @@ class ProfilePage.Kudosu extends React.Component
   render: =>
     el 'div',
       className: 'profile-extra'
-      el 'h2', className: 'profile-extra__title', Lang.get('users.show.extra.kudosu.title')
+
+      el ProfilePage.ExtraHeader, name: @props.name, withEdit: @props.withEdit
 
       el 'div', className: 'kudosu-box',
         el 'div', className: 'kudosu-box__content',

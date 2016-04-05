@@ -57,8 +57,7 @@ ProfilePage.Medals = React.createClass
   render: ->
     div
       className: 'profile-extra'
-      h2 className: 'profile-extra__title', Lang.get('users.show.extra.medals.title')
-
+      el ProfilePage.ExtraHeader, name: @props.name, withEdit: @props.withEdit
       div className: 'medals-group',
         _.map @_groupedAchievements(), (groupedAchievements, grouping) =>
           div

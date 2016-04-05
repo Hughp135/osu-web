@@ -16,6 +16,8 @@
 # along with osu!web.  If not, see <http://www.gnu.org/licenses/>.
 ###
 class @LineChart
+  transition: 1000
+
   constructor: (area, @options = {}) ->
     @options.scales ||= {}
     @options.scales.x ||= d3.time.scale()
@@ -165,10 +167,12 @@ class @LineChart
 
   drawAxes: =>
     @svgXAxis
+      .transition @transition
       .attr 'transform', "translate(0, #{@height})"
       .call @xAxis
 
     @svgYAxis
+      .transition @transition
       .call @yAxis
 
     @svgXAxis.selectAll '.tick line'
@@ -186,7 +190,7 @@ class @LineChart
 
     @svgXAxis.selectAll 'text'
       .style 'text-anchor', 'start'
-      .attr 'transform', 'rotate(45)'
+      .attr 'transform', 'rotate(45) translate(5, 0)'
       .classed 'chart__tick-text chart__tick-text--strong', true
 
     @svgYAxis.selectAll 'text'
@@ -195,17 +199,18 @@ class @LineChart
 
   drawLine: =>
     @svgLine
+      .transition @transition
       .attr 'd', @line
 
 
   showTooltip: =>
-    fade.in @svgHoverMark.node()
-    fade.in @tooltip.node()
+    Fade.in @svgHoverMark.node()
+    Fade.in @tooltip.node()
 
 
   hideTooltip: =>
-    fade.out @svgHoverMark.node()
-    fade.out @tooltip.node()
+    Fade.out @svgHoverMark.node()
+    Fade.out @tooltip.node()
 
 
   positionTooltip: =>
@@ -230,8 +235,8 @@ class @LineChart
     @svgHoverMark
       .attr 'transform', "translate(#{coords.join(', ')})"
 
-    @tooltipX.text @options.formats.x(d.x)
-    @tooltipY.text @options.formats.y(d.y)
+    @tooltipX.html (@options.tooltipFormats?.x || @options.formats.x)(d.x)
+    @tooltipY.html (@options.tooltipFormats?.y || @options.formats.y)(d.y)
     @tooltip
       .style 'transform', "translate(#{coordsTooltip.join(', ')})"
 

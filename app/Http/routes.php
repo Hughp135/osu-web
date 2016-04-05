@@ -43,6 +43,8 @@ if (Config::get('app.debug')) {
 Route::get('/home/news', ['as' => 'news', 'uses' => 'HomeController@getNews']);
 Route::get('/home/download', ['as' => 'download', 'uses' => 'HomeController@getDownload']);
 Route::get('/home/changelog', ['as' => 'changelog', 'uses' => 'HomeController@getChangelog']);
+Route::get('/home/support', ['as' => 'support-the-game', 'uses' => 'HomeController@supportTheGame']);
+
 Route::get('/icons', 'HomeController@getIcons');
 
 // beatmaps section
@@ -79,7 +81,8 @@ Route::post('/community/live', ['as' => 'live', 'uses' => 'CommunityController@p
 Route::get('/community/chat', ['as' => 'chat', 'uses' => 'CommunityController@getChat']);
 Route::get('/community/profile/{id}', function ($id) { return Redirect::route('users.show', $id); });
 
-Route::get('/community/support', ['as' => 'community.support', 'uses' => 'CommunityController@getSupport']);
+Route::get('/community/slack', ['as' => 'slack', 'uses' => 'CommunityController@getSlack']);
+Route::post('/community/slack/agree', ['as' => 'slack.agree', 'uses' => 'CommunityController@postSlackAgree']);
 
 Route::get('/u/{id}', ['as' => 'users.show', 'uses' => 'UsersController@show']);
 
@@ -92,17 +95,6 @@ Route::get('/wiki', ['as' => 'wiki', function () { return Redirect::to('https://
 
 Route::get('/help/support', ['as' => 'support', 'uses' => 'HelpController@getSupport']);
 Route::get('/help/faq', ['as' => 'faq', 'uses' => 'HelpController@getFaq']);
-
-// store admin
-Route::group(['prefix' => 'store/admin', 'namespace' => 'Store\Admin'], function () {
-    Route::post('orders/ship', ['as' => 'store.admin.orders.ship', 'uses' => 'OrderController@ship']);
-    Route::resource('orders', 'OrderController', ['only' => ['index', 'show', 'update']]);
-    Route::resource('orders.items', 'OrderItemController', ['only' => ['update']]);
-
-    Route::resource('addresses', 'AddressController', ['only' => ['update']]);
-
-    Route::get('/', function () { return Redirect::route('store.admin.orders.index'); });
-});
 
 // catchall controllers
 Route::controller('/notifications', 'NotificationController');
@@ -141,10 +133,33 @@ Route::group(['prefix' => 'forum'], function () {
 });
 
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
+    Route::get('/', ['as' => 'admin.root', 'uses' => 'PagesController@root']);
+
     Route::resource('logs', 'LogsController', ['only' => ['index']]);
+
+    Route::get('/beatmapsets/{id}/covers', ['as' => 'admin.beatmapsets.covers', 'uses' => 'BeatmapsetsController@covers']);
+    Route::post('/beatmapsets/{id}/covers/regenerate', ['as' => 'admin.beatmapsets.covers.regenerate', 'uses' => 'BeatmapsetsController@regenerateCovers']);
+
+    // store admin
+    Route::group(['prefix' => 'store', 'namespace' => 'Store'], function () {
+        Route::post('orders/ship', ['as' => 'admin.store.orders.ship', 'uses' => 'OrdersController@ship']);
+        Route::resource('orders', 'OrdersController', ['only' => ['index', 'show', 'update']]);
+        Route::resource('orders.items', 'OrderItemsController', ['only' => ['update']]);
+
+        Route::resource('addresses', 'AddressesController', ['only' => ['update']]);
+
+        Route::get('/', function () { return Redirect::route('admin.store.orders.index'); });
+    });
+
+    Route::group(['prefix' => 'forum', 'namespace' => 'Forum'], function () {
+        Route::resource('forum-covers', 'ForumCoversController', ['only' => ['index', 'store', 'update']]);
+    });
 });
 
-Route::put('/account/update-profile-cover', ['as' => 'account.update-profile-cover', 'uses' => 'AccountController@updateProfileCover']);
+// Uploading file doesn't quite work with PUT/PATCH.
+// Reference: https://bugs.php.net/bug.php?id=55815
+// Note that hhvm behaves differently (the same as POST).
+Route::post('/account/update-profile', ['as' => 'account.update-profile', 'uses' => 'AccountController@updateProfile']);
 Route::put('/account/page', ['as' => 'account.page', 'uses' => 'AccountController@updatePage']);
 
 // API
@@ -159,3 +174,12 @@ Route::get('/api/get_beatmaps', ['uses' => 'APIController@getBeatmaps']);
 
 Route::resource('post', 'PostController');
 Route::resource('modding', 'ModdingPostController');
+
+// status
+if (Config::get('app.debug')) {
+    Route::get('/status', ['uses' => 'StatusController@getMain']);
+} else {
+    Route::group(['domain' => 'stat.ppy.sh'], function () {
+        Route::get('/', ['uses' => 'StatusController@getMain']);
+    });
+}

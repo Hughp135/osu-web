@@ -63,7 +63,8 @@ class ProfilePage.UserPage extends React.Component
       page = @pageShow()
 
     el 'div', className: 'profile-extra',
-      el 'h2', className: 'profile-extra__title', Lang.get('users.show.extra.me.title')
+      el ProfilePage.ExtraHeader, name: @props.name, withEdit: @props.withEdit
+
       if withEditButton && !@props.userPage.editing
         el 'div', className: 'profile-extra__actions',
           el 'div', className: 'forum-post-actions',

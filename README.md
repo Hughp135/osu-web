@@ -36,7 +36,15 @@ Using Laravel's [Elixir](http://laravel.com/docs/5.1/elixir).
     $ cd /data/osu\!web
     $ php artisan lang:js resources/assets/js/messages.js
     $ ./node_modules/.bin/gulp
-    
+
+### Reset the database + seed
+
+    c:\osuweb\vagrant> vagrant ssh
+    $ cd /data/osu\!web
+    $ php artisan migrate:refresh --seed
+
+Run the above command to rebuild the database and seed with sample data. Note: to seed beatmaps, you must add a valid osu! API key into the .env configuration file as it obtains beatmap data from the osu! API.
+
 Developing
 ---------
 
@@ -62,6 +70,19 @@ We welcome all contributions, but keep in mind that we already have the full sit
 Contributions can be made via pull requests to this repository. We hope to credit and reward larger contributions via a [bounty system](https://goo.gl/nFdoyI). If you're unsure of what you can help with, check out the [list](https://github.com/ppy/osu-web/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3Abounty) of available issues with bounty.
 
 Note that while we already have certain standards in place, nothing is set in stone. If you have an issue with the way code is structured; with any libraries we are using; with any processes involved with contributing, *please* bring it up. I welcome all feedback so we can make contributing to this project as easy as possible.
+
+Seeking Help
+------------
+
+If you need help with anything, you have two options:
+
+#### Create an Issue
+
+If you have something you want to discuss in detail, or have hit an issue which you believe others will also have in deployment or development on the system, [opening an issue](https://github.com/ppy/osu-web/issues) is the best way to get help. It creates a permanent resource for others wishing to contribute to conversation. Please **make sure to search first** in case someone else has already addressed the same issue!
+
+#### Ask on Slack
+
+We have a channel on the [osu! public slack](https://osu.ppy.sh/p/slack) dedicated to osu-web development. If you have a problem which you think might be the result of your own stupidity, want to ask a quick question that doesn't deserve opening an issue or just discuss things in a casual environment, this is for you!
 
 Licence
 -------

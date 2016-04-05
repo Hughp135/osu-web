@@ -191,6 +191,11 @@ select.form-control {
   &--profile-page-edit {
     width: 140px;
   }
+
+  &--full-width {
+    display: block;
+    width: 100%;
+  }
 }
 
 .btn-osu(@main, @secondary) {
@@ -261,7 +266,6 @@ input[type="checkbox"], input[type="radio"] {
 
 .shadow-hover {
   .default-box-shadow;
-  .fade-element(120ms);
 
   &:hover {
     .thicker-box-shadow;
